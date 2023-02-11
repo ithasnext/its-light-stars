@@ -1,6 +1,7 @@
-var inc = 0.01;
+var inc = 0.005;
 var ctx;
 var gradient = [];
+var time = inc;
 
 function setup() {
     //setup canvas
@@ -14,7 +15,7 @@ function setup() {
     // stage.addChild(rect);
     // stage.update();
     // frameRate(30);
-
+    noiseDetail(1, .2);
 }
 
 var indexes = [];
@@ -26,7 +27,7 @@ function draw() {
         for (var x = 0; x < canvas.width; x++) {
             // console.log("heloo");
             var index = (x + y * canvas.width) * 4;
-            var r = noise(xoff, yoff) * 255;
+            var r = noise(xoff, yoff, time) * 255;
             pixels[index] = r;
             pixels[index + 1] = r;
             pixels[index + 2] = r;
@@ -36,6 +37,7 @@ function draw() {
         }
         yoff += inc;
     }
+    time += inc;
     updatePixels();
 }
 

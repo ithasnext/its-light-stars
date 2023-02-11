@@ -1,7 +1,9 @@
 //take random points in the canvas and make it a white square,tilted.
 //fade out on every tick
-var canvas;
+var canvasCreate;
+var canvasPerlin;
 var stage;
+var stagePerlin;
 var inc = 0.01;
 var opacityStep = 0.1;
 var star = {
@@ -47,8 +49,8 @@ function createStars() {
         var size = Math.floor(Math.random() * maxStarSize);
         rect.graphics.beginFill("white").drawRect(0,0,size,size);
         rect.rotation = 45;
-        rect.x = Math.floor(Math.random() * canvas.width);
-        rect.y = Math.floor(Math.random() * canvas.height);
+        rect.x = Math.floor(Math.random() * canvasCreate.width);
+        rect.y = Math.floor(Math.random() * canvasCreate.height);
         rect.life = 2* Math.floor(Math.random() * maxFade); //always even
         rect.twinkle = Math.floor(Math.random() * maxTwinkle);
         rect.alpha = 0;
@@ -86,14 +88,64 @@ function twinkle(star) {
 }
 
 function setup() {
-    createCanvas(500,500);
-    canvas = document.getElementById("defaultCanvas0");
-    stage = new createjs.Stage(canvas);
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    canvasCreate = document.getElementById("cjCanvas");
+    canvasCreate.width = width;
+    canvasCreate.height = height;
+    stage = new createjs.Stage(canvasCreate);
+
+    canvasCreate.style.left = "0px";
+    canvasCreate.style.top = "0px";
+    canvasCreate.style.position = "absolute";
+
     var rect = new createjs.Shape();
-    rect.graphics.beginFill("black").drawRect(0,0,canvas.width, canvas.height);
+    rect.graphics.beginFill("black").drawRect(0,0,canvasCreate.width, canvasCreate.height);
     stage.globalCompositeOperation = "lighter";
     stage.addChild(rect);
     stage.update();
+
+    
+    var perlinCanvas = document.getElementById("perlineCanvas");
+
+    canvasP5.style.left = "0px";
+    canvasP5.style.top = "0px";
+    canvasP5.style.position = "absolute";
+    canvasP5.style.opacity = "0.2";
+    rows = floor(canvasP5.width / scl);
+    cols = floor(canvasP5.height / scl);
+}
+
+var scl = 5;
+var rows, cols;
+var zoff = 0;
+var loopDelay = 0;
+function draw () {
+    // if (loopDelay == 0) {
+        background(61, 124, 240);
+        generateNoise();
+        loopDelay = 10;
+    // }
+    loopDelay--;
+}
+
+function generateNoise () {
+
+    let xoff = 0.0;
+    for (let x = 0; x < cols; x++) {
+        let yoff = 0.0;
+        for(let y = 0; y < rows; y++) {
+            var index = (x + y * canvasP5.width) * 4;
+            var angle = noise(xoff, yoff, zoff) * 255;
+            yoff += inc;
+            fill(angle);
+            stroke(angle);
+            rect(x*scl, y*scl, scl, scl);
+        }
+        xoff += inc;
+        zoff += 0.00004;
+    }
+    // noLoop();
 }
 
 
